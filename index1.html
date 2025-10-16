@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CRYOMOT - 3D Microscopy Analysis</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <div class="logo">CRYOMOT</div>
+      <button class="about-btn">About</button>
+    </header>
+
+    <nav>
+      <button class="nav-btn active" onclick="switchTab('upload')">
+        Upload Data
+      </button>
+      <button class="nav-btn" onclick="switchTab('analysis')">Analysis</button>
+      <button class="nav-btn" onclick="switchTab('visualization')">
+        3D Visualization
+      </button>
+      <button class="nav-btn" onclick="switchTab('results')">Results</button>
+      <button class="nav-btn" onclick="switchTab('history')">History</button>
+    </nav>
+
+    <div class="container">
+      <!-- Upload Data Section -->
+      <section id="upload" class="section active upload-section">
+        <h2>Upload 3D Microscopy Data</h2>
+        <div
+          class="drop-zone"
+          onclick="openFolderPicker()"
+          ondragover="handleDragOver(event)"
+          ondrop="handleDrop(event)"
+          ondragleave="handleDragLeave(event)"
+        >
+          Drop your cryo-ET folder here
+        </div>
+        <input
+          type="file"
+          id="folderInput"
+          webkitdirectory
+          directory
+          multiple
+          onchange="handleFolderSelect(event)"
+        />
+
+        <div class="parameters-row">
+          <div class="parameter-box">
+            <h3>Detection Parameters</h3>
+            <div style="margin-bottom: 15px">
+              <div
+                style="font-size: 12px; font-weight: 600; margin-bottom: 8px"
+              >
+                Confidence Threshold
+              </div>
+              <div class="slider-container">
+                <span class="slider-label">70%</span>
+                <input type="range" min="0" max="100" value="70" />
+                <span class="slider-label">100%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="parameter-box">
+            <h3>Preprocessing Options</h3>
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input type="checkbox" checked />
+                <label>Noise reduction</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" checked />
+                <label>Edge preserve</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" checked />
+                <label>Normalize intensity</label>
+              </div>
+              <div class="checkbox-item">
+                <input type="checkbox" />
+                <label>Auto-contrast Adjustment</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Analysis Section -->
+      <section id="analysis" class="section">
+        <div class="pipeline">
+          <h2>Analysis Pipeline</h2>
+          <div>
+            <div class="pipeline-step">
+              <div style="display: flex; align-items: center; flex: 1">
+                <div class="step-icon"></div>
+                <div class="step-content">
+                  <div class="step-name">Data Loading</div>
+                  <div class="step-status">8.6s</div>
+                </div>
+              </div>
+              <button class="step-toggle" onclick="toggleStep(this)">▼</button>
+            </div>
+            <div class="step-content-expanded">
+              <div class="thumbnails">
+                <div class="thumbnail"></div>
+                <div class="thumbnail"></div>
+                <div class="thumbnail"></div>
+                <div class="thumbnail"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pipeline-step">
+            <div style="display: flex; align-items: center; flex: 1">
+              <div class="step-icon"></div>
+              <div class="step-content">
+                <div class="step-name">Preprocessing</div>
+                <div class="step-status">loading</div>
+              </div>
+            </div>
+            <button class="step-toggle" onclick="toggleStep(this)">▼</button>
+          </div>
+
+          <div class="pipeline-step">
+            <div style="display: flex; align-items: center; flex: 1">
+              <div class="step-icon"></div>
+              <div class="step-content">
+                <div class="step-name">Deep Learning Inference</div>
+                <div class="step-status">loading</div>
+              </div>
+            </div>
+            <button class="step-toggle" onclick="toggleStep(this)">▼</button>
+          </div>
+
+          <div class="pipeline-step">
+            <div style="display: flex; align-items: center; flex: 1">
+              <div class="step-icon"></div>
+              <div class="step-content">
+                <div class="step-name">Post-processing</div>
+                <div class="step-status">loading</div>
+              </div>
+            </div>
+            <button class="step-toggle" onclick="toggleStep(this)">▼</button>
+          </div>
+
+          <div class="pipeline-step">
+            <div style="display: flex; align-items: center; flex: 1">
+              <div class="step-icon"></div>
+              <div class="step-content">
+                <div class="step-name">Results Generation</div>
+                <div class="step-status">loading</div>
+              </div>
+            </div>
+            <button class="step-toggle" onclick="toggleStep(this)">▼</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3D Visualization Section -->
+      <section id="visualization" class="section">
+        <h2>3D Reconstruction Viewer</h2>
+        <div class="viewer">3D Viewer will render here</div>
+      </section>
+
+      <!-- Results Section -->
+      <section id="results" class="section">
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="stat-label">Total Motors Detected</div>
+            <div class="stat-value">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Avg. Euclidean Distance</div>
+            <div class="stat-value">81%</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Avg. F Beta Score</div>
+            <div class="stat-value">81%</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Avg. Processing time</div>
+            <div class="stat-value">5.8s</div>
+          </div>
+        </div>
+
+        <div class="detection-summary">
+          <h3>Detection Summary</h3>
+          <div class="detection-row">
+            <div>High Confidence (>90%)</div>
+            <div>0</div>
+          </div>
+          <div class="detection-row">
+            <div>Medium Confidence (80-90%)</div>
+            <div>0</div>
+          </div>
+          <div class="detection-row">
+            <div>Low Confidence (<80%)</div>
+            <div>0</div>
+          </div>
+        </div>
+      </section>
+      2
+
+      <!-- History Section -->
+      <section id="history" class="section">
+        <div class="history-list">
+          <h2 style="margin-bottom: 20px">History</h2>
+
+          <div>
+            <div class="history-item">
+              <div class="history-timestamp">10-09-2025 11:35:55</div>
+              <div class="history-count">0</div>
+              <div class="history-controls">
+                <button class="delete-btn" onclick="toggleHistory(this)">
+                  ▼
+                </button>
+              </div>
+            </div>
+            <div class="history-expanded">
+              <div class="stats-grid" style="margin-top: 0">
+                <div class="stat-box">
+                  <div class="stat-label">Total Motors Detected</div>
+                  <div class="stat-value">0</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-label">Avg. Euclidean Distance</div>
+                  <div class="stat-value">81%</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-label">Avg. F Beta Score</div>
+                  <div class="stat-value">81%</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-label">Avg. Processing time</div>
+                  <div class="stat-value">5.8s</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="history-item">
+              <div class="history-timestamp">10-09-2025 14:15:03</div>
+              <div class="history-count">3</div>
+              <div class="history-controls">
+                <button class="delete-btn" onclick="toggleHistory(this)">
+                  ▼
+                </button>
+              </div>
+            </div>
+            <div class="history-expanded">
+              <div class="stats-grid" style="margin-top: 0">
+                <div class="stat-box">
+                  <div class="stat-label">Total Motors Detected</div>
+                  <div class="stat-value">3</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-label">Avg. Euclidean Distance</div>
+                  <div class="stat-value">81%</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-label">Avg. F Beta Score</div>
+                  <div class="stat-value">81%</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-label">Avg. Processing time</div>
+                  <div class="stat-value">5.8s</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="history-item">
+              <div class="history-timestamp">10-07-2025 16:50:05</div>
+              <div class="history-count">1</div>
+              <div class="history-controls">
+                <button class="delete-btn" onclick="toggleHistory(this)">
+                  ▲
+                </button>
+              </div>
+            </div>
+            <div class="history-expanded">
+              <div class="stats-grid" style="margin-top: 0">
+                <div class="stat-box">
+                  <div class="stat-label">Total Motors Detected</div>
+                  <div class="stat-value">1</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-label">Avg. Euclidean Distance</div>
+                  <div class="stat-value">81%</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-label">Avg. F Beta Score</div>
+                  <div class="stat-value">81%</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-label">Avg. Processing time</div>
+                  <div class="stat-value">56.8s</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
