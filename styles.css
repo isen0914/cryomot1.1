@@ -239,6 +239,23 @@
             display: block;
         }
 
+        /* Delete button inside expanded history entries */
+        .history-expanded {
+            position: relative;
+        }
+
+        .history-expanded .delete-history-btn {
+            position: absolute;
+            right: 16px;
+            bottom: 16px;
+            background-color: #c84b4b;
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
         .thumbnails {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -313,6 +330,11 @@
 
         .detection-row:last-child {
             border-bottom: none;
+        }
+
+        /* Make room for the Save Result button so it doesn't overlap content */
+        #results {
+            padding-bottom: 70px; /* space for the absolutely positioned button */
         }
 
         /* History Section */
