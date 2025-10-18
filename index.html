@@ -165,43 +165,57 @@
       </section>
 
       <!-- Results Section -->
-      <section id="results" class="section">
+      <section id="results" class="section" style="position: relative">
         <div class="stats-grid">
           <div class="stat-box">
             <div class="stat-label">Total Motors Detected</div>
-            <div class="stat-value">0</div>
+            <div id="totalMotorsValue" class="stat-value">0</div>
           </div>
           <div class="stat-box">
             <div class="stat-label">Avg. Euclidean Distance</div>
-            <div class="stat-value">81%</div>
+            <div id="avgDistanceValue" class="stat-value">81%</div>
           </div>
           <div class="stat-box">
             <div class="stat-label">Avg. F Beta Score</div>
-            <div class="stat-value">81%</div>
+            <div id="avgFbetaValue" class="stat-value">81%</div>
           </div>
           <div class="stat-box">
             <div class="stat-label">Avg. Processing time</div>
-            <div class="stat-value">5.8s</div>
+            <div id="avgProcTimeValue" class="stat-value">5.8s</div>
           </div>
         </div>
 
         <div class="detection-summary">
           <h3>Detection Summary</h3>
           <div class="detection-row">
-            <div>High Confidence (>90%)</div>
-            <div>0</div>
+            <div>High Confidence (&gt;90%)</div>
+            <div id="highConfCount">0</div>
           </div>
           <div class="detection-row">
             <div>Medium Confidence (80-90%)</div>
-            <div>0</div>
+            <div id="medConfCount">0</div>
           </div>
           <div class="detection-row">
-            <div>Low Confidence (<80%)</div>
-            <div>0</div>
+            <div>Low Confidence (&lt;80%)</div>
+            <div id="lowConfCount">0</div>
           </div>
         </div>
+
+        <!-- Save Result button (bottom-right of Results tab) -->
+        <button
+          id="saveResultBtn"
+          class="delete-btn"
+          style="
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            padding: 8px 12px;
+          "
+          onclick="saveResult()"
+        >
+          Save Result
+        </button>
       </section>
-      2
 
       <!-- History Section -->
       <section id="history" class="section">
@@ -237,6 +251,9 @@
                   <div class="stat-value">5.8s</div>
                 </div>
               </div>
+              <button class="delete-history-btn" onclick="deleteHistory(this)">
+                Delete
+              </button>
             </div>
           </div>
 
@@ -269,6 +286,9 @@
                   <div class="stat-value">5.8s</div>
                 </div>
               </div>
+              <button class="delete-history-btn" onclick="deleteHistory(this)">
+                Delete
+              </button>
             </div>
           </div>
 
@@ -300,6 +320,12 @@
                   <div class="stat-label">Avg. Processing time</div>
                   <div class="stat-value">56.8s</div>
                 </div>
+                <button
+                  class="delete-history-btn"
+                  onclick="deleteHistory(this)"
+                >
+                  Delete
+                </button>
               </div>
             </div>
           </div>
