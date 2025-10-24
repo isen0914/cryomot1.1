@@ -9,20 +9,38 @@
   <body>
     <header>
       <div class="logo">CRYOMOT</div>
-      <button class="about-btn">About</button>
+      <button class="hamburger-menu" onclick="toggleMobileNav()">
+        <img src="hams.png" alt="Menu" />
+      </button>
+      <nav id="desktop-nav">
+        <button class="nav-btn active" onclick="switchTab('upload')">
+          Upload Data
+        </button>
+        <button class="nav-btn" onclick="switchTab('analysis')">Analysis</button>
+        <button class="nav-btn" onclick="switchTab('visualization')">
+          3D Visualization
+        </button>
+        <button class="nav-btn" onclick="switchTab('results')">Results</button>
+        <button class="nav-btn" onclick="switchTab('history')">History</button>
+        <button class="nav-btn" onclick="switchTab('about')">About</button>
+      </nav>
     </header>
 
-    <nav>
-      <button class="nav-btn active" onclick="switchTab('upload')">
+    <!-- Mobile Sidebar Navigation -->
+    <div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="closeMobileNav()"></div>
+    <nav class="mobile-nav" id="mobileNav">
+      <button class="nav-btn active" onclick="switchTab('upload'); closeMobileNav()">
         Upload Data
       </button>
-      <button class="nav-btn" onclick="switchTab('analysis')">Analysis</button>
-      <button class="nav-btn" onclick="switchTab('visualization')">
+      <button class="nav-btn" onclick="switchTab('analysis'); closeMobileNav()">Analysis</button>
+      <button class="nav-btn" onclick="switchTab('visualization'); closeMobileNav()">
         3D Visualization
       </button>
-      <button class="nav-btn" onclick="switchTab('results')">Results</button>
-      <button class="nav-btn" onclick="switchTab('history')">History</button>
+      <button class="nav-btn" onclick="switchTab('results'); closeMobileNav()">Results</button>
+      <button class="nav-btn" onclick="switchTab('history'); closeMobileNav()">History</button>
+      <button class="nav-btn" onclick="switchTab('about'); closeMobileNav()">About</button>
     </nav>
+
 
     <div class="container">
       <!-- Upload Data Section -->
@@ -330,9 +348,21 @@
             </div>
           </div>
         </div>
+        
       </section>
-    </div>
+      <!-- About Section -->
+      <section id="about" class="section">
+        <h2>ibahin mo na lang sen</h2>
+        <p>
+          Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
 
+          Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+
+          Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+
+          Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+        </p>
+      </section>
     <script src="script.js"></script>
   </body>
 </html>

@@ -17,12 +17,117 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
         }
 
         .logo {
             font-size: 28px;
             font-weight: 300;
             letter-spacing: 2px;
+        }
+
+        /* Hamburger Menu Button (Hidden by default) */
+        .hamburger-menu {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .hamburger-menu:hover {
+            background-color: rgba(0,0,0,0.1);
+        }
+
+        .hamburger-menu img {
+            width: 24px;
+            height: 24px;
+            display: block;
+        }
+
+        /* Desktop Navigation */
+        #desktop-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        #desktop-nav button {
+            background-color: #e0e0e0;
+            border: 1px solid #999;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        #desktop-nav button:hover {
+            background-color: #f0f0f0;
+        }
+
+        #desktop-nav button.active {
+            background-color: #fff;
+            font-weight: 500;
+        }
+
+        /* Mobile Navigation Sidebar */
+        .mobile-nav {
+            position: fixed;
+            top: 0;
+            right: -280px;
+            width: 280px;
+            height: 100vh;
+            background-color: #e8e8e8;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            transition: right 0.3s ease-in-out;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+        }
+
+        .mobile-nav.open {
+            right: 0;
+        }
+
+        .mobile-nav button {
+            background-color: transparent;
+            border: none;
+            padding: 16px 30px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            border-bottom: 1px solid #d0d0d0;
+        }
+
+        .mobile-nav button:hover {
+            background-color: #f0f0f0;
+        }
+
+        .mobile-nav button.active {
+            background-color: #fff;
+            font-weight: 500;
+        }
+
+        /* Mobile Navigation Overlay */
+        .mobile-nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+
+        .mobile-nav-overlay.show {
+            opacity: 1;
+            visibility: visible;
         }
 
         .about-btn {
@@ -34,15 +139,16 @@
             border-radius: 3px;
         }
 
-        nav {
+        /* nav {
             background-color: #d8d8d8;
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             padding: 10px 30px;
             border-bottom: 1px solid #ccc;
-        }
+        } */
 
+        /* Legacy nav button styles (now moved to #desktop-nav) */
         nav button {
             background-color: #e0e0e0;
             border: 1px solid #999;
@@ -378,13 +484,17 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                gap: 15px;
+            /* Hide desktop nav and show hamburger menu */
+            #desktop-nav {
+                display: none;
             }
 
-            nav {
-                justify-content: center;
+            .hamburger-menu {
+                display: block;
+            }
+
+            header {
+                padding: 15px 20px;
             }
 
             .parameters-row {
@@ -409,9 +519,13 @@
                 font-size: 22px;
             }
 
-            nav button {
-                padding: 10px 16px;
-                font-size: 12px;
+            header {
+                padding: 15px;
+            }
+
+            .mobile-nav {
+                width: 100vw;
+                right: -100vw;
             }
 
             .stats-grid {

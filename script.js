@@ -2,13 +2,44 @@ function switchTab(tabName) {
   const sections = document.querySelectorAll('.section');
   sections.forEach((section) => section.classList.remove('active'));
 
-  const buttons = document.querySelectorAll('.nav-btn');
-  buttons.forEach((btn) => btn.classList.remove('active'));
+  // Update active state for both desktop and mobile nav buttons
+  const allButtons = document.querySelectorAll('.nav-btn');
+  allButtons.forEach((btn) => btn.classList.remove('active'));
 
   document.getElementById(tabName).classList.add('active');
-  if (typeof event !== 'undefined' && event && event.target) {
-    event.target.classList.add('active');
-  }
+  
+  // Find and activate the corresponding buttons in both desktop and mobile nav
+  const desktopButtons = document.querySelectorAll('#desktop-nav .nav-btn');
+  const mobileButtons = document.querySelectorAll('.mobile-nav .nav-btn');
+  
+  desktopButtons.forEach((btn, index) => {
+    if (btn.onclick && btn.onclick.toString().includes(`'${tabName}'`)) {
+      btn.classList.add('active');
+    }
+  });
+  
+  mobileButtons.forEach((btn, index) => {
+    if (btn.onclick && btn.onclick.toString().includes(`'${tabName}'`)) {
+      btn.classList.add('active');
+    }
+  });
+}
+
+// Mobile Navigation Functions
+function toggleMobileNav() {
+  const mobileNav = document.getElementById('mobileNav');
+  const overlay = document.getElementById('mobileNavOverlay');
+  
+  mobileNav.classList.toggle('open');
+  overlay.classList.toggle('show');
+}
+
+function closeMobileNav() {
+  const mobileNav = document.getElementById('mobileNav');
+  const overlay = document.getElementById('mobileNavOverlay');
+  
+  mobileNav.classList.remove('open');
+  overlay.classList.remove('show');
 }
 
 function toggleStep(button) {
