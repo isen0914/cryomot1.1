@@ -11,7 +11,7 @@
         }
 
         header {
-            background-color: #e8e8e8;
+            background-color: #016B61;
             padding: 20px 30px;
             display: flex;
             justify-content: space-between;
@@ -19,6 +19,7 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             position: relative;
         }
+        
 
         .logo {
             font-size: 28px;
@@ -51,11 +52,11 @@
         #desktop-nav {
             display: flex;
             gap: 10px;
+            background-color: #016B61;
         }
 
         #desktop-nav button {
-            background-color: #e0e0e0;
-            border: 1px solid #999;
+            background-color: #9ECFD4;
             padding: 12px 24px;
             cursor: pointer;
             font-size: 14px;
@@ -63,11 +64,11 @@
         }
 
         #desktop-nav button:hover {
-            background-color: #f0f0f0;
+            background-color: #70B2B2;
         }
 
         #desktop-nav button.active {
-            background-color: #fff;
+            background-color: #70B2B2;
             font-weight: 500;
         }
 
@@ -171,6 +172,7 @@
             padding: 30px;
             max-width: 1200px;
             margin: 0 auto;
+            background-color: #E5E9C5;
         }
 
         .section {
