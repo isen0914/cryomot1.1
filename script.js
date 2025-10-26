@@ -108,7 +108,7 @@ function formatTimestamp(d) {
 }
 
 // Save current Results into History (name = current date/time)
-function saveResult() {
+async function saveResult() {
   const name = formatTimestamp(new Date());
 
   const total = document.getElementById('totalMotorsValue')?.textContent?.trim() || '0';
@@ -120,86 +120,172 @@ function saveResult() {
   const med = document.getElementById('medConfCount')?.textContent?.trim() || '0';
   const low = document.getElementById('lowConfCount')?.textContent?.trim() || '0';
 
-  const historyList = document.querySelector('.history-list');
-  if (!historyList) {
-    console.warn('History list not found.');
-    return;
-  }
-
-  // Build DOM structure matching existing history entries
-  const container = document.createElement('div');
-
-  const item = document.createElement('div');
-  item.className = 'history-item';
-  item.innerHTML = `
-    <div class="history-timestamp">${name}</div>
-    <div class="history-count">${total}</div>
-    <div class="history-controls">
-      <button class="delete-btn" onclick="toggleHistory(this)">▼</button>
-    </div>
-  `;
-
-  const expanded = document.createElement('div');
-  expanded.className = 'history-expanded';
-  expanded.innerHTML = `
-    <div class="stats-grid" style="margin-top: 0">
-      <div class="stat-box">
-        <div class="stat-label">Total Motors Detected</div>
-        <div class="stat-value">${total}</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-label">Avg. Euclidean Distance</div>
-        <div class="stat-value">${avgDist}</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-label">Avg. F Beta Score</div>
-        <div class="stat-value">${avgF}</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-label">Avg. Processing time</div>
-        <div class="stat-value">${avgProc}</div>
-      </div>
-      <div style="grid-column: 1 / -1; margin-top: 12px; text-align: left; font-size: 13px;">
-        <strong>Detection breakdown:</strong> High: ${high}, Medium: ${med}, Low: ${low}
-      </div>
-    </div>
-  `;
-
-  // Add delete button to expanded area
-  const deleteBtnHtml = `<button class="delete-history-btn" onclick="deleteHistory(this)">Delete</button>`;
-  expanded.innerHTML = expanded.innerHTML + deleteBtnHtml;
-
-  container.appendChild(item);
-  container.appendChild(expanded);
-
-  // Insert right after the header (history title) so newest appears first
-  historyList.insertBefore(container, historyList.children[1] || null);
-
+  // Save to database
+  const sql = `INSERT INTO cryomot_history (timestamp, total_motors, avg_distance, avg_fbeta, avg_proc_time, high_conf, med_conf, low_conf) 
+               VALUES ('${name}', ${total}, '${avgDist}', '${avgF}', '${avgProc}', ${high}, ${med}, ${low})`;
+  
+  const result = await executeSQL(sql);
+  
   // Give brief feedback on button
   const btn = document.getElementById('saveResultBtn');
-  if (btn) {
-    const prev = btn.textContent;
-    btn.textContent = 'Saved';
-    setTimeout(() => (btn.textContent = prev), 1200);
+  if (!result.error) {
+    await loadHistory(); // Reload history to show new entry
+    if (btn) {
+      const prev = btn.textContent;
+      btn.textContent = 'Saved';
+      setTimeout(() => (btn.textContent = prev), 1200);
+    }
+  } else {
+    if (btn) {
+      const prev = btn.textContent;
+      btn.textContent = 'Error';
+      setTimeout(() => (btn.textContent = prev), 1200);
+    }
+    console.error("Failed to save result:", result.error);
   }
 }
 
 // Delete a history entry. `btn` is the 'Delete' button inside .history-expanded
-function deleteHistory(btn) {
-  const expanded = btn.closest('.history-expanded');
-  if (!expanded) return;
-  const wrapper = expanded.previousElementSibling ? expanded.previousElementSibling.parentElement : expanded.parentElement;
-  // If items were created as container -> item + expanded, wrapper is the container
-  if (wrapper && wrapper.parentElement) {
-    wrapper.remove();
+async function deleteHistory(btn) {
+  const recordId = btn.getAttribute('data-id');
+  
+  if (!recordId) {
+    console.warn('No record ID found');
     return;
   }
-  // Fallback: remove the pair (item + expanded)
-  const item = expanded.previousElementSibling;
-  if (item) {
-    item.remove();
+
+  // Delete from database
+  const sql = `DELETE FROM cryomot_history WHERE id = ${recordId}`;
+  const result = await executeSQL(sql);
+  
+  if (!result.error) {
+    await loadHistory(); // Reload history to reflect deletion
+  } else {
+    alert("Failed to delete record: " + result.error);
+    console.error("Delete error:", result.error);
   }
-  expanded.remove();
+}
+
+// ============ DATABASE FUNCTIONS ============
+const API_URL = "http://192.168.100.120:85/api/sql.php";
+
+// Execute SQL query via API
+async function executeSQL(sqlQuery) {
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sql: sqlQuery })
+    });
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error("SQL Error:", err);
+    return { error: err.message };
+  }
+}
+
+// Load history from database
+async function loadHistory() {
+  const sql = "SELECT * FROM cryomot_history ORDER BY created_at DESC";
+  const result = await executeSQL(sql);
+  
+  console.log("Load history result:", result); // Debug logging
+  
+  // Handle different response formats
+  let records = [];
+  if (result.data) {
+    records = result.data;
+  } else if (Array.isArray(result)) {
+    records = result;
+  } else if (result.error) {
+    console.warn("Failed to load history:", result.error);
+    return;
+  }
+
+  const historyList = document.querySelector('.history-list');
+  if (!historyList) {
+    console.warn("History list element not found");
+    return;
+  }
+
+  // Clear existing history items (keep the h2 title)
+  const children = Array.from(historyList.children);
+  children.forEach((child, index) => {
+    if (index > 0) child.remove(); // Keep first child (h2 title)
+  });
+
+  console.log("Records to display:", records); // Debug logging
+
+  // Populate with database records
+  records.forEach(record => {
+    const container = document.createElement('div');
+
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    item.innerHTML = `
+      <div class="history-timestamp">${record.timestamp}</div>
+      <div class="history-count">${record.total_motors}</div>
+      <div class="history-controls">
+        <button class="delete-btn" onclick="toggleHistory(this)">▼</button>
+      </div>
+    `;
+
+    const expanded = document.createElement('div');
+    expanded.className = 'history-expanded';
+    expanded.innerHTML = `
+      <div class="stats-grid" style="margin-top: 0">
+        <div class="stat-box">
+          <div class="stat-label">Total Motors Detected</div>
+          <div class="stat-value">${record.total_motors}</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Avg. Euclidean Distance</div>
+          <div class="stat-value">${record.avg_distance}</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Avg. F Beta Score</div>
+          <div class="stat-value">${record.avg_fbeta}</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Avg. Processing time</div>
+          <div class="stat-value">${record.avg_proc_time}</div>
+        </div>
+      </div>
+      <button class="delete-history-btn" data-id="${record.id}" onclick="deleteHistory(this)">Delete</button>
+    `;
+
+    container.appendChild(item);
+    container.appendChild(expanded);
+    historyList.appendChild(container);
+  });
+}
+
+// Add random test data to database
+async function addRandomHistory() {
+  const timestamp = formatTimestamp(new Date());
+  const totalMotors = Math.floor(Math.random() * 10);
+  const avgDist = Math.floor(Math.random() * 100) + "%";
+  const avgFbeta = Math.floor(Math.random() * 100) + "%";
+  const avgProcTime = (Math.random() * 60).toFixed(1) + "s";
+  const highConf = Math.floor(Math.random() * 5);
+  const medConf = Math.floor(Math.random() * 5);
+  const lowConf = Math.floor(Math.random() * 5);
+
+  const sql = `INSERT INTO cryomot_history (timestamp, total_motors, avg_distance, avg_fbeta, avg_proc_time, high_conf, med_conf, low_conf) 
+               VALUES ('${timestamp}', ${totalMotors}, '${avgDist}', '${avgFbeta}', '${avgProcTime}', ${highConf}, ${medConf}, ${lowConf})`;
+  
+  console.log("Executing SQL:", sql); // Debug logging
+  const result = await executeSQL(sql);
+  console.log("Insert result:", result); // Debug logging
+  
+  if (!result.error) {
+    console.log("Insert successful, reloading history..."); // Debug logging
+    await loadHistory(); // Reload history to show new entry
+    alert("Random test data added!");
+  } else {
+    alert("Failed to add test data: " + result.error);
+  }
 }
 
 // Cleanup: remove stray text nodes that contain only the character "2"
@@ -216,4 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
   } catch (e) {
     console.warn('Cleanup routine failed', e);
   }
+
+  // Load history from database on page load
+  loadHistory();
 });
