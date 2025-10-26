@@ -1,7 +1,6 @@
 # cryomot1.1
 
-just a read me
-hehe
+http://mysql.justpi.tech/api/sql.php  -- PHP api running from server 
 
 016B61
 70B2B2

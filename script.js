@@ -167,7 +167,7 @@ async function deleteHistory(btn) {
 }
 
 // ============ DATABASE FUNCTIONS ============
-const API_URL = "http://192.168.100.120:85/api/sql.php";
+const API_URL = "http://mysql.justpi.tech/api/sql.php";
 
 // Execute SQL query via API
 async function executeSQL(sqlQuery) {
@@ -286,7 +286,7 @@ async function addRandomHistory() {
   } else {
     alert("Failed to add test data: " + result.error);
   }
-}
+}s
 
 // Cleanup: remove stray text nodes that contain only the character "2"
 document.addEventListener('DOMContentLoaded', () => {
