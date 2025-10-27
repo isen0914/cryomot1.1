@@ -167,20 +167,33 @@ async function deleteHistory(btn) {
 }
 
 // ============ DATABASE FUNCTIONS ============
-const API_URL = "http://mysql.justpi.tech/api/sql.php";
+const API_URL = "https://mysql.justpi.tech/api/sql.php";
 
 // Execute SQL query via API
 async function executeSQL(sqlQuery) {
+  console.log("Executing SQL:", sqlQuery);
+  console.log("API URL:", API_URL);
+  
   try {
     const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ sql: sqlQuery })
     });
+    
+    console.log("Response status:", res.status);
+    console.log("Response OK:", res.ok);
+    
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    
     const data = await res.json();
+    console.log("Response data:", data);
     return data;
   } catch (err) {
     console.error("SQL Error:", err);
+    console.error("Error details:", err.message);
     return { error: err.message };
   }
 }
