@@ -1,3 +1,6 @@
+// Global variable to track history refresh interval
+let historyRefreshInterval = null;
+
 function switchTab(tabName) {
   const sections = document.querySelectorAll('.section');
   sections.forEach((section) => section.classList.remove('active'));
@@ -23,6 +26,34 @@ function switchTab(tabName) {
       btn.classList.add('active');
     }
   });
+
+  // Handle history tab - fetch and start auto-refresh
+  if (tabName === 'history') {
+    loadHistory(); // Fetch immediately when tab is opened
+    startHistoryAutoRefresh();
+  } else {
+    stopHistoryAutoRefresh();
+  }
+}
+
+// Start auto-refresh for history (every 10 seconds)
+function startHistoryAutoRefresh() {
+  // Clear any existing interval first
+  stopHistoryAutoRefresh();
+  
+  // Set up new interval
+  historyRefreshInterval = setInterval(() => {
+    console.log("Auto-refreshing history...");
+    loadHistory();
+  }, 10000); // 10 seconds
+}
+
+// Stop auto-refresh
+function stopHistoryAutoRefresh() {
+  if (historyRefreshInterval) {
+    clearInterval(historyRefreshInterval);
+    historyRefreshInterval = null;
+  }
 }
 
 // Mobile Navigation Functions
@@ -316,6 +347,6 @@ document.addEventListener('DOMContentLoaded', () => {
     console.warn('Cleanup routine failed', e);
   }
 
-  // Load history from database on page load
-  loadHistory();
+  // Don't load history on page load - only when user switches to history tab
+  // This saves unnecessary API calls
 });
