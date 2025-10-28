@@ -22,9 +22,14 @@
         
 
         .logo {
-            font-size: 28px;
-            font-weight: 300;
-            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            max-height: 40px;
+            width: auto;
+            object-fit: contain;
         }
 
         /* Hamburger Menu Button (Hidden by default) */
