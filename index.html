@@ -208,9 +208,9 @@
             <select id="presetVolumeSelect" style="width:100%; margin-top:4px;">
             <option value="none" selected>None</option>
 
-            <option value="https://raw.githubusercontent.com/isen0914/cryomot1.1/main/volume_masked1.npy">volume_masked1.npy</option>
-            <option value="https://raw.githubusercontent.com/isen0914/cryomot1.1/main/volume_masked2.npy">volume_masked2.npy</option>
-            <option value="https://raw.githubusercontent.com/isen0914/cryomot1.1/main/volume_masked3.npy">volume_masked3.npy</option>
+            <option value="volume_tomo_00e047_compressed.npy">volume_tomo_00e047_compressed.npy</option>
+            <option value="volume_tomo_01a877_compressed.npy">volume_tomo_01a877_compressed.npy</option>
+            <option value="volume_tomo_003acc_compressed.npy">volume_tomo_003acc_compressed.npy</option>
             </select>
 
             <button id="loadPresetVolume" style="margin-top:6px;">Load Selected Volume</button>
@@ -786,22 +786,24 @@
       };
       reader.readAsArrayBuffer(file);
     });
+document.getElementById("loadPresetVolume").addEventListener("click", () => {
+  const sel = document.getElementById("presetVolumeSelect");
+  const url = sel.value;
 
-    document.getElementById('loadUrl').addEventListener('click', async ()=>{
-      const url = document.getElementById('urlInput').value.trim();
-      if (!url) return alert('Enter a relative URL or file path');
-      try {
-        const resp = await fetch(url);
-        if (!resp.ok) throw new Error('Fetch failed: ' + resp.status);
-        const ab = await resp.arrayBuffer();
-        const parsed = parseNpy(ab);
-        lastParsedVolume = parsed;
-        renderImage(vtkImageFromNpy(parsed));
-        document.getElementById('downloadNpy').disabled = false;
-      } catch (err) {
-        alert('Load error: ' + err.message);
-      }
-    });
+  if (url === "none") {
+    alert("Select a volume.");
+    return;
+  }
+
+  loadVolumeFromURL(url);
+});
+
+    document.getElementById("loadUrl").addEventListener("click", () => {
+  const url = document.getElementById("urlInput").value.trim();
+  if (!url) return alert("Enter a URL.");
+  loadVolumeFromURL(url);
+});
+
 
     // Motors (.npy Nx3)
     document.getElementById('motorsFile').addEventListener('change', (ev)=>{
