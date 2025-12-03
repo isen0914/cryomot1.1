@@ -189,75 +189,83 @@
 
       <!-- 3D Visualization Section -->
 <section id="visualization" class="section">
-  <h2>3D Reconstruction Viewer</h2>
+        <h2>3D Reconstruction Viewer</h2>
 
-  <div id="vtkContainer" class="viewer">
-    <div id="vtkCanvas"></div>
+        <div id="vtkContainer" class="viewer">
+          <div id="vtkCanvas"></div>
 
-    <!-- Controls panel -->
-    <div id="vtkControls">
-      <!-- Close button -->
-      <button id="closeControls" style="
-        position:absolute; top:6px; right:6px;
-        border:none; background:transparent; font-weight:bold; font-size:14px;
-        cursor:pointer; color:#333;
-      ">✖</button>
+          <!-- Controls -->
+          <div id="vtkControls">
 
-      <div style="font-weight:700; margin-bottom:6px;">VTK.js Tomogram Viewer (RGBA + Motors)</div>
+            <!-- CLOSE BUTTON -->
+            <button id="closeControls" style="position:absolute; top:6px; right:6px; border:none; background:transparent; font-weight:bold; font-size:14px; cursor:pointer; color:#333;">✖</button>
 
-      <!-- Volume input -->
-      <label style="font-size:12px;">Volume (.npy)</label>
-      <input id="fileInput" type="file" accept=".npy" style="width:100%; margin-top:4px;">
-      <div style="margin-top:6px;">
-        <label style="font-size:12px;">or URL</label>
-        <input id="urlInput" type="text" placeholder="relative/path/to/volume.npy" style="width:100%; margin-top:4px;">
-        <button id="loadUrl" style="margin-top:6px;">Load Volume</button>
-      </div>
+            <div style="font-weight:700; margin-bottom:6px;">VTK.js Tomogram Viewer</div>
 
-      <hr style="margin:8px 0;">
+            <!-- ★★★ GOOGLE DRIVE DROPDOWN HERE ★★★ -->
+            
+            <label style="font-size:12px; margin-top:10px;">Select Online Volume (Google Drive)</label>
+            <select id="presetVolumeSelect" style="width:100%; margin-top:4px;">
+              <option value="none" selected>None</option>
 
-      <!-- Motor coordinates -->
-      <label style="font-size:12px;">Motor coordinates (.npy)</label>
-      <input id="motorsFile" type="file" accept=".npy" style="width:100%; margin-top:4px;">
-      <div style="margin-top:6px;">
-        <input id="motorsUrl" type="text" placeholder="relative/path/to/motors.npy" style="width:100%; margin-top:4px;">
-        <button id="loadMotorsUrl" style="margin-top:6px;">Load Motors</button>
-      </div>
+              <!-- SAMPLE FORMAT -->
+              <option value="https://drive.google.com/file/d/1trcq0UD1d74eib6ZwTP-QLJuTDSd0F4G/view?usp=sharing">Dataset 1</option>
+              <option value="https://drive.google.com/file/d/1QZ3ZOadyruoR_6wJ6mMoacJzqXj5Lv9Y/view?usp=sharing">Dataset 2</option>
+              <option value="https://drive.google.com/file/d/153AijHt9TVwTrhIMiTxg91PSU4tKQa50/view?usp=sharing">Dataset 3</option>
+            </select>
 
-      <!-- Sample distance -->
-      <div style="margin-top:8px;">
-        <label>Sample distance</label><br>
-        <input id="sampleDist" type="range" min="0.1" max="5" step="0.1" value="1" style="width:100%;">
-      </div>
+            <button id="loadPresetVolume" style="margin-top:6px;">Load Selected Volume</button>
 
-      <!-- Toggle volume/motors visibility -->
-      <div style="margin-top:8px;">
-        <input id="showVolume" type="checkbox" checked> <label for="showVolume">Show Volume</label><br>
-        <input id="showMotors" type="checkbox" checked> <label for="showMotors">Show Motors</label>
-      </div>
 
-      <!-- Download -->
-      <div style="margin-top:8px;">
-        <button id="downloadNpy" disabled>Download current volume (.npy)</button>
-      </div>
+            <!-- Local Upload -->
+            <label style="font-size:12px; margin-top:12px;">Volume (.npy)</label>
+            <input id="fileInput" type="file" accept=".npy" style="width:100%; margin-top:4px;" />
 
-      <div style="font-size:11px; margin-top:8px; color:#333;">
-        Tip: serve over local HTTP server: <code>python -m http.server 8000</code>
-      </div>
-    </div>
+            <!-- URL Input -->
+            <div style="margin-top:6px;">
+              <label style="font-size:12px;">or URL</label>
+              <input id="urlInput" type="text" placeholder="relative/path/to/volume.npy" style="width:100%; margin-top:4px;" />
+              <button id="loadUrl" style="margin-top:6px;">Load Volume</button>
+            </div>
 
-    <!-- Overlay message -->
-    <div id="viewerOverlayMessage">No volume loaded</div>
+            <hr style="margin:8px 0;" />
 
-    <!-- Show controls button -->
-    <button id="showControlsBtn" style="
-      position:absolute; bottom:10px; left:10px;
-      z-index:30; padding:6px 12px; font-size:13px; border:none;
-      background:rgba(255,255,255,0.85); border-radius:4px;
-      cursor:pointer; display:none;
-    ">Show Controls</button>
+            <!-- Motors -->
+            <label style="font-size:12px;">Motor coordinates (.npy)</label>
+            <input id="motorsFile" type="file" accept=".npy" style="width:100%; margin-top:4px;" />
 
-  </div>
+            <div style="margin-top:6px;">
+              <input id="motorsUrl" type="text" placeholder="relative/path/to/motors.npy" style="width:100%; margin-top:4px;" />
+              <button id="loadMotorsUrl" style="margin-top:6px;">Load Motors</button>
+            </div>
+
+            <!-- Sample Distance -->
+            <div style="margin-top:8px;">
+              <label>Sample distance</label><br />
+              <input id="sampleDist" type="range" min="0.1" max="5" step="0.1" value="1" style="width:100%;" />
+            </div>
+
+            <!-- Toggles -->
+            <div style="margin-top:8px;">
+              <input id="showVolume" type="checkbox" checked /><label for="showVolume"> Show Volume</label><br />
+              <input id="showMotors" type="checkbox" checked /><label for="showMotors"> Show Motors</label>
+            </div>
+
+            <!-- Download -->
+            <div style="margin-top:8px;">
+              <button id="downloadNpy" disabled>Download current volume (.npy)</button>
+            </div>
+
+            <div style="font-size:11px; margin-top:8px;">
+              Tip: serve via <code>python -m http.server 8000</code>
+            </div>
+
+          </div>
+
+          <div id="viewerOverlayMessage">No volume loaded</div>
+
+          <button id="showControlsBtn" style="position:absolute; bottom:10px; left:10px; z-index:30; padding:6px 12px; background:rgba(255,255,255,0.85); border:none; border-radius:4px; font-size:13px; cursor:pointer; display:none;">Show Controls</button>
+        </div>
 
   <!-- Styles -->
   <style>
