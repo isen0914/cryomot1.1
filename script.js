@@ -350,3 +350,80 @@ document.addEventListener('DOMContentLoaded', () => {
   // Don't load history on page load - only when user switches to history tab
   // This saves unnecessary API calls
 });
+
+
+
+// --- Load Dropbox-Hosted NPY File ---
+document.getElementById("loadPresetVolume").addEventListener("click", async () => {
+  const select = document.getElementById("presetVolumeSelect");
+  const url = select.value;
+
+  if (url === "none") {
+    alert("Select a volume from the dropdown.");
+    return;
+  }
+
+  try {
+    // Extract Google Drive file ID
+    const fileId = extractDriveID(url);
+    if (!fileId) {
+      alert("Invalid Google Drive URL.");
+      return;
+    }
+
+    const arrayBuffer = await fetchFromGoogleDrive(fileId);
+
+    const parsed = parseNpy(arrayBuffer);
+    lastParsedVolume = parsed;
+
+    renderImage(vtkImageFromNpy(parsed));
+    document.getElementById("downloadNpy").disabled = false;
+
+    // Reset manual upload
+    document.getElementById("fileInput").value = "";
+  } catch (err) {
+    alert("Error loading Google Drive volume:\n" + err.message);
+  }
+});
+
+
+// --- Convert Google Drive link to direct ID ---
+function extractDriveID(url) {
+  // supports:
+  // https://drive.google.com/file/d/FILEID/view?usp=sharing
+  // https://drive.google.com/uc?id=FILEID&export=download
+  // https://drive.google.com/open?id=FILEID
+
+  const dMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (dMatch) return dMatch[1];
+
+  const idMatch = url.match(/id=([a-zA-Z0-9_-]+)/);
+  if (idMatch) return idMatch[1];
+
+  return null;
+}
+
+async function fetchFromGoogleDrive(fileId) {
+  const base = "https://drive.google.com/uc?export=download&id=" + fileId;
+
+  // First request (may return confirmation HTML)
+  let resp = await fetch(base);
+  let text = await resp.text();
+
+  // If Google returned HTML, find confirm token
+  if (text.includes("confirm=")) {
+    const confirmToken = text.match(/confirm=([0-9A-Za-z_]+)/)[1];
+    const downloadURL = base + "&confirm=" + confirmToken;
+
+    resp = await fetch(downloadURL);
+    return await resp.arrayBuffer();
+  }
+
+  // If the result is binary already
+  if (resp.ok) {
+    return await resp.arrayBuffer();
+  }
+
+  throw new Error("Google Drive fetch failed.");
+}
+
