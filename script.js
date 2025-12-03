@@ -355,36 +355,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // --- Load Dropbox-Hosted NPY File ---
 // --- Load NPY Directly from GitHub ---
-document.getElementById("loadPresetVolume").addEventListener("click", async () => {
-  const select = document.getElementById("presetVolumeSelect");
-  const url = select.value;
 
-  if (url === "none") {
-    alert("Select a preset volume first.");
-    return;
-  }
 
-  try {
-    const resp = await fetch(url);
 
-    if (!resp.ok) {
-      throw new Error("GitHub fetch failed: " + resp.status);
-    }
-
-    const arrayBuffer = await resp.arrayBuffer();
-
-    const parsed = parseNpy(arrayBuffer);
-    lastParsedVolume = parsed;
-
-    renderImage(vtkImageFromNpy(parsed));
-    document.getElementById("downloadNpy").disabled = false;
-
-    // Reset uploaded file
-    document.getElementById("fileInput").value = "";
-  } catch (err) {
-    alert("Error loading GitHub volume:\n" + err.message);
-  }
-});
 
 // --- When user uploads manually, reset dropdown to 'None'
 document.getElementById("fileInput").addEventListener("change", () => {
@@ -433,4 +406,57 @@ async function fetchFromGoogleDrive(fileId) {
   throw new Error("Google Drive fetch failed.");
 }
 
+async function loadCompressedVolume(npyUrl, metaUrl) {
+  // Fetch compressed uint8 NPY
+  const resp = await fetch(npyUrl);
+  const arrayBuffer = await resp.arrayBuffer();
+  const parsed = parseNpy(arrayBuffer);   // returns uint8 array
 
+  // Fetch metadata
+  const metaResp = await fetch(metaUrl);
+  const meta = await metaResp.json();
+
+  const { original_shape, min, max } = meta;
+
+  // Convert uint8 → float32 in 0–1 range
+  let vol = parsed.data;
+  let volFloat = new Float32Array(vol.length);
+
+  for (let i = 0; i < vol.length; i++) {
+    volFloat[i] = vol[i] / 255;
+  }
+
+  // Restore original range
+  for (let i = 0; i < volFloat.length; i++) {
+    volFloat[i] = volFloat[i] * (max - min) + min;
+  }
+
+  // Reshape to 300x300xN
+  const restored = {
+    data: volFloat,
+    shape: original_shape
+  };
+
+  return restored;
+}
+
+//new 
+async function loadVolumeFromURL(url) {
+  try {
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error("Failed to fetch: " + resp.status);
+
+    const arrayBuffer = await resp.arrayBuffer();
+
+    const parsed = parseNpy(arrayBuffer);
+    lastParsedVolume = parsed;
+
+    renderImage(vtkImageFromNpy(parsed));
+    document.getElementById("downloadNpy").disabled = false;
+
+    console.log("Loaded volume:", url);
+
+  } catch (err) {
+    alert("Error loading volume:\n" + err.message);
+  }
+}
