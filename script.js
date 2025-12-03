@@ -354,24 +354,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // --- Load Dropbox-Hosted NPY File ---
+// --- Load NPY Directly from GitHub ---
 document.getElementById("loadPresetVolume").addEventListener("click", async () => {
   const select = document.getElementById("presetVolumeSelect");
   const url = select.value;
 
   if (url === "none") {
-    alert("Select a volume from the dropdown.");
+    alert("Select a preset volume first.");
     return;
   }
 
   try {
-    // Extract Google Drive file ID
-    const fileId = extractDriveID(url);
-    if (!fileId) {
-      alert("Invalid Google Drive URL.");
-      return;
+    const resp = await fetch(url);
+
+    if (!resp.ok) {
+      throw new Error("GitHub fetch failed: " + resp.status);
     }
 
-    const arrayBuffer = await fetchFromGoogleDrive(fileId);
+    const arrayBuffer = await resp.arrayBuffer();
 
     const parsed = parseNpy(arrayBuffer);
     lastParsedVolume = parsed;
@@ -379,12 +379,18 @@ document.getElementById("loadPresetVolume").addEventListener("click", async () =
     renderImage(vtkImageFromNpy(parsed));
     document.getElementById("downloadNpy").disabled = false;
 
-    // Reset manual upload
+    // Reset uploaded file
     document.getElementById("fileInput").value = "";
   } catch (err) {
-    alert("Error loading Google Drive volume:\n" + err.message);
+    alert("Error loading GitHub volume:\n" + err.message);
   }
 });
+
+// --- When user uploads manually, reset dropdown to 'None'
+document.getElementById("fileInput").addEventListener("change", () => {
+  document.getElementById("presetVolumeSelect").value = "none";
+});
+
 
 
 // --- Convert Google Drive link to direct ID ---
@@ -426,4 +432,5 @@ async function fetchFromGoogleDrive(fileId) {
 
   throw new Error("Google Drive fetch failed.");
 }
+
 
